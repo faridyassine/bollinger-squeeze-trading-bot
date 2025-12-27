@@ -114,6 +114,41 @@ python -m backend.main
 pip install -r requirements.txt
 ```
 
+## 📊 Data Providers
+
+The bot supports two market data providers:
+
+### Yahoo Finance (Default - No Setup Required)
+- **Pros**: No API keys required, free, easy to start
+- **Cons**: Rate limits (~2,000 requests/hour), reliability issues, 15-20 minute delayed data, frequent blocking
+
+### Alpaca (Recommended - Free Account Required)
+- **Pros**: Reliable, 200 requests/minute (12,000/hour), real-time data, professional-grade API, better uptime
+- **Cons**: Requires free account and API keys
+
+**To use Alpaca (recommended)**:
+1. Create a free account at [alpaca.markets](https://alpaca.markets/)
+2. Generate Paper Trading API keys (no real money needed)
+3. Add keys to `.env` file:
+   ```env
+   ALPACA_API_KEY=your_key
+   ALPACA_SECRET_KEY=your_secret
+   ALPACA_PAPER=true
+   ```
+4. Update `config.yaml`:
+   ```yaml
+   data:
+     provider: "alpaca"
+   ```
+5. Restart the bot
+
+**Test your setup**:
+```bash
+python scripts/test_alpaca.py
+```
+
+📖 **Detailed setup guide**: See [docs/alpaca_setup.md](docs/alpaca_setup.md) for step-by-step instructions with screenshots.
+
 ## 🎯 Usage
 
 ### Run Market Scanner

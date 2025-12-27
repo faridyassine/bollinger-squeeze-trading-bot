@@ -1,8 +1,30 @@
-"""Base market data provider interface."""
+"""Base market data provider interface and factory."""
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Optional, List, Dict
 import pandas as pd
+
+
+def get_data_provider(provider_name: str = "yahoo"):
+    """Factory function to get data provider.
+    
+    Args:
+        provider_name: Name of the provider ('yahoo' or 'alpaca')
+        
+    Returns:
+        MarketDataProvider instance
+        
+    Raises:
+        ValueError: If provider name is unknown
+    """
+    if provider_name == "yahoo":
+        from backend.data.yahoo_finance import YahooFinanceProvider
+        return YahooFinanceProvider()
+    elif provider_name == "alpaca":
+        from backend.data.alpaca import AlpacaDataProvider
+        return AlpacaDataProvider()
+    else:
+        raise ValueError(f"Unknown provider: {provider_name}. Choose 'yahoo' or 'alpaca'.")
 
 
 class MarketDataProvider(ABC):
