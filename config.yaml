@@ -1,8 +1,13 @@
 # Market Data
+# Provider options:
+#   - "yahoo": Free, but has rate limits (~2000/hour) and reliability issues
+#   - "alpaca": More reliable, 200 requests/minute, real-time data (requires API keys)
 data:
-  provider: "yahoo"
-  update_interval: 60
+  provider: "alpaca"
+  timeframe: "1d"
+  update_interval: 60  # Can be more frequent with Alpaca (was 300 for Yahoo)
   cache_enabled: true
+  cache_duration: 60
 
 # Watchlist
 watchlist:
@@ -35,11 +40,11 @@ strategy:
     target_multiplier: 3.0
     stop_loss_atr_multiplier: 2.0
 
-# Scanner
+# Scanner (optimized for Alpaca)
 scanner:
   enabled: true
-  scan_interval: 60
-  parallel_workers: 10
+  scan_interval: 120  # 2 minutes (Alpaca supports this well)
+  parallel_workers: 10  # Can handle more workers
   filters:
     min_price: 10.0
     max_price: 1000.0
