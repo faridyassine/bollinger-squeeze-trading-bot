@@ -20,9 +20,10 @@ def test_bollinger_bands(sample_ohlcv_data):
     assert 'bb_lower' in result.columns
     assert 'bb_width' in result.columns
     
-    # Check that upper is above middle is above lower
-    assert (result['bb_upper'] >= result['bb_middle']).all()
-    assert (result['bb_middle'] >= result['bb_lower']).all()
+    # Check that upper is above middle is above lower (skip NaN values)
+    valid_data = result.dropna()
+    assert (valid_data['bb_upper'] >= valid_data['bb_middle']).all()
+    assert (valid_data['bb_middle'] >= valid_data['bb_lower']).all()
 
 
 def test_rsi(sample_ohlcv_data):
