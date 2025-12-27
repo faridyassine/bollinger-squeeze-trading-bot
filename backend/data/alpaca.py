@@ -4,6 +4,7 @@ import os
 import pandas as pd
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import alpaca_trade_api as tradeapi
 from .market_data import MarketDataProvider
 from backend.core.logging_config import get_logger
@@ -157,18 +158,7 @@ class AlpacaDataProvider(MarketDataProvider):
             if bars.index.tz is not None:
                 bars.index = bars.index.tz_localize(None)
 
-            # Standardize column names to lowercase (Alpaca uses lowercase by default)
-            bars = bars.rename(
-                columns={
-                    "open": "open",
-                    "high": "high",
-                    "low": "low",
-                    "close": "close",
-                    "volume": "volume",
-                }
-            )
-
-            # Keep only OHLCV columns
+            # Keep only OHLCV columns (Alpaca already uses lowercase)
             bars = bars[["open", "high", "low", "close", "volume"]]
 
             logger.info(f"Retrieved {len(bars)} bars for {symbol}")
@@ -226,14 +216,23 @@ class AlpacaDataProvider(MarketDataProvider):
         prices = {}
 
         try:
-            # Alpaca doesn't have a bulk latest trade endpoint, so fetch individually
-            for symbol in symbols:
+            # Use ThreadPoolExecutor for concurrent requests to improve performance
+            # Limit workers to avoid hitting rate limits (200 req/min = ~3 req/sec)
+            max_workers = min(len(symbols), 10)
+
+            def fetch_price(symbol):
                 try:
-                    price = self.get_latest_price(symbol)
-                    prices[symbol] = price
+                    return symbol, self.get_latest_price(symbol)
                 except Exception as e:
                     logger.error(f"Error getting price for {symbol}: {e}")
-                    prices[symbol] = 0.0
+                    return symbol, 0.0
+
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = {executor.submit(fetch_price, symbol): symbol for symbol in symbols}
+
+                for future in as_completed(futures):
+                    symbol, price = future.result()
+                    prices[symbol] = price
 
         except Exception as e:
             logger.error(f"Error fetching multiple prices: {e}")
