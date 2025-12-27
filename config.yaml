@@ -1,0 +1,93 @@
+# Market Data
+data:
+  provider: "yahoo"
+  update_interval: 60
+  cache_enabled: true
+
+# Watchlist
+watchlist:
+  symbols:
+    - AAPL
+    - AMZN
+    - GOOG
+    - GOOGL
+    - META
+    - MSFT
+    - NVDA
+    - TSLA
+    - AMD
+    - NFLX
+
+# Strategy
+strategy:
+  bollinger_squeeze:
+    enabled: true
+    bollinger_period: 20
+    bollinger_std: 2.0
+    squeeze_threshold: 0.5
+    min_days_in_squeeze: 2
+    max_days_in_squeeze: 10
+    require_volume_confirmation: true
+    volume_spike_multiplier: 1.5
+    require_rsi_confirmation: true
+    rsi_min: 40
+    rsi_max: 70
+    target_multiplier: 3.0
+    stop_loss_atr_multiplier: 2.0
+
+# Scanner
+scanner:
+  enabled: true
+  scan_interval: 60
+  parallel_workers: 10
+  filters:
+    min_price: 10.0
+    max_price: 1000.0
+    min_volume: 1000000
+
+# Alerts
+alerts:
+  telegram:
+    enabled: true
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+    squeeze_detected: true
+    breakout_happened: true
+  discord:
+    enabled: false
+    webhook_url: "${DISCORD_WEBHOOK_URL}"
+  email:
+    enabled: false
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    from_email: "${EMAIL_FROM}"
+    to_email: "${EMAIL_TO}"
+    password: "${EMAIL_PASSWORD}"
+
+# Backtesting
+backtesting:
+  start_date: "2015-01-01"
+  end_date: "2023-12-31"
+  initial_capital: 10000
+  position_size: 0.1
+  commission: 0.001
+  slippage: 0.0005
+
+# API
+api:
+  host: "0.0.0.0"
+  port: 8000
+  enable_cors: true
+  enable_docs: true
+
+# Database
+database:
+  type: "sqlite"
+  path: "data/trading.db"
+
+# Logging
+logging:
+  level: "INFO"
+  file: "logs/trading.log"
+  max_size: 10485760
+  backup_count: 5
