@@ -1,7 +1,7 @@
 """Yahoo Finance data provider implementation."""
 import yfinance as yf
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List, Dict
 import pandas as pd
 from .market_data import MarketDataProvider
 from backend.core.logging_config import get_logger
@@ -113,7 +113,7 @@ class YahooFinanceProvider(MarketDataProvider):
             logger.error(f"Error getting price for {symbol}: {e}")
             return 0.0
     
-    def get_multiple_prices(self, symbols: list[str]) -> dict[str, float]:
+    def get_multiple_prices(self, symbols: List[str]) -> Dict[str, float]:
         """Get latest prices for multiple symbols.
         
         Args:

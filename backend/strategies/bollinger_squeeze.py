@@ -177,8 +177,10 @@ class BollingerSqueezeStrategy(BaseStrategy):
         current = data.iloc[index]
         current_price = current['close']
         
-        # Determine position side based on entry
-        is_long = current_price >= entry_price
+        # Determine position side from signal direction
+        # Assuming we have stored the signal at entry
+        signal = data['signal'].iloc[data.index.get_loc(entry_date)]
+        is_long = signal > 0
         
         # Calculate stop loss and target
         atr = current['atr']

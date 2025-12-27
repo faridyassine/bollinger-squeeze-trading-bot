@@ -133,7 +133,7 @@ class BacktestEngine:
             # Check if we have enough capital
             cost = entry_price * shares * (1 + self.commission)
             if cost > self.capital:
-                logger.debug(f"Insufficient capital for {symbol}: need ${cost:.2f}, have ${self.capital:.2f}")
+                logger.warning(f"Insufficient capital for {symbol}: need ${cost:.2f}, have ${self.capital:.2f}")
                 return
             
             # Open position

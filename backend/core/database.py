@@ -1,6 +1,6 @@
 """Database models and connection management."""
 from datetime import datetime
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean, Text, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean, Text, ForeignKey, func
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 from pathlib import Path
 
@@ -14,7 +14,7 @@ class Squeeze(Base):
     
     id = Column(Integer, primary_key=True)
     symbol = Column(String(10), nullable=False, index=True)
-    detected_at = Column(DateTime, default=datetime.utcnow)
+    detected_at = Column(DateTime, server_default=func.now())
     price = Column(Float, nullable=False)
     squeeze_strength = Column(Float, nullable=False)
     days_in_squeeze = Column(Integer, default=0)
@@ -25,7 +25,7 @@ class Squeeze(Base):
     macd = Column(Float)
     volume = Column(Float)
     status = Column(String(20), default='active')  # active, breakout, expired
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
     alerts = relationship("Alert", back_populates="squeeze")
 
@@ -40,7 +40,7 @@ class Alert(Base):
     type = Column(String(20), nullable=False)  # squeeze_detected, breakout, exit
     channel = Column(String(20), nullable=False)  # telegram, discord, email
     message = Column(Text, nullable=False)
-    sent_at = Column(DateTime, default=datetime.utcnow)
+    sent_at = Column(DateTime, server_default=func.now())
     success = Column(Boolean, default=True)
     error = Column(Text)
     
@@ -66,7 +66,7 @@ class Backtest(Base):
     max_drawdown = Column(Float)
     total_trades = Column(Integer)
     parameters = Column(Text)  # JSON string
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, server_default=func.now())
     
     trades = relationship("Trade", back_populates="backtest")
 
@@ -101,7 +101,7 @@ class Watchlist(Base):
     
     id = Column(Integer, primary_key=True)
     symbol = Column(String(10), nullable=False, unique=True)
-    added_at = Column(DateTime, default=datetime.utcnow)
+    added_at = Column(DateTime, server_default=func.now())
     notes = Column(Text)
 
 

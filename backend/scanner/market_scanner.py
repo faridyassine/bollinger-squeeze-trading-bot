@@ -1,5 +1,6 @@
 """Multi-symbol parallel market scanner."""
 import time
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
 from datetime import datetime, timedelta
@@ -23,7 +24,9 @@ class MarketScanner:
             max_workers: Maximum parallel workers
         """
         self.symbols = symbols or config.watchlist.get('symbols', [])
-        self.max_workers = max_workers
+        # Validate and limit max_workers
+        cpu_limit = os.cpu_count() * 2 if os.cpu_count() else 10
+        self.max_workers = min(max_workers, len(self.symbols) if self.symbols else 10, cpu_limit)
         self.data_provider = YahooFinanceProvider(cache_enabled=True)
         
         # Get strategy params from config

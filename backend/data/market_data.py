@@ -1,7 +1,7 @@
 """Base market data provider interface."""
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List, Dict
 import pandas as pd
 
 
@@ -42,7 +42,7 @@ class MarketDataProvider(ABC):
         pass
     
     @abstractmethod
-    def get_multiple_prices(self, symbols: list[str]) -> dict[str, float]:
+    def get_multiple_prices(self, symbols: List[str]) -> Dict[str, float]:
         """Get latest prices for multiple symbols.
         
         Args:
